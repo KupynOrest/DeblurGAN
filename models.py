@@ -146,8 +146,8 @@ class DiscriminatorNetwork:
         x = LeakyReLU(0.3, name="gan_lrelu1_1")(x)
 
         x = Convolution2D(64, self.k, self.k, border_mode='same', name='gan_conv1_2', subsample=(2, 2))(x)
-        x = LeakyReLU(0.3, name='gan_lrelu1_2')(x)
         x = BatchNormalization(mode=self.mode, axis=channel_axis, name='gan_batchnorm1_1')(x)
+        x = LeakyReLU(0.3, name='gan_lrelu1_2')(x)
 
         filters = [128, 256] if self.small_model else [128, 256, 512]
 
@@ -157,8 +157,8 @@ class DiscriminatorNetwork:
 
                 x = Convolution2D(nb_filters, self.k, self.k, border_mode='same', subsample=subsample,
                                   name='gan_conv%d_%d' % (i + 2, j + 1))(x)
-                x = LeakyReLU(0.3, name='gan_lrelu_%d_%d' % (i + 2, j + 1))(x)
                 x = BatchNormalization(mode=self.mode, axis=channel_axis, name='gan_batchnorm%d_%d' % (i + 2, j + 1))(x)
+                x = LeakyReLU(0.3, name='gan_lrelu_%d_%d' % (i + 2, j + 1))(x)
 
         x = Flatten(name='gan_flatten')(x)
 
