@@ -8,6 +8,7 @@ from keras.utils.np_utils import to_categorical
 from keras.utils.data_utils import get_file
 
 from keras_ops import fit as bypass_fit, smooth_gan_labels
+from sklearn.feature_extraction.image import extract_patches_2d
 
 from layers import Normalize, Denormalize, SubPixelUpscaling
 from loss import AdversarialLossRegularizer, ContentVGGRegularizer, TVRegularizer, psnr, dummy_loss
@@ -22,6 +23,8 @@ from scipy.ndimage.filters import gaussian_filter
 
 THEANO_WEIGHTS_PATH_NO_TOP = r'https://github.com/fchollet/deep-learning-models/releases/download/v0.1/vgg16_weights_th_dim_ordering_th_kernels_notop.h5'
 TF_WEIGHTS_PATH_NO_TOP = r"https://github.com/fchollet/deep-learning-models/releases/download/v0.1/vgg16_weights_tf_dim_ordering_tf_kernels_notop.h5"
+
+learning_rate = 1e-4
 
 if not os.path.exists("weights/"):
     os.makedirs("weights/")
@@ -209,13 +212,12 @@ class DiscriminatorNetwork:
 
 class GenerativeNetwork:
 
-    def __init__(self, img_width=28, img_height=28, batch_size=16, nb_upscales=2, small_model=False,
+    def __init__(self, img_width=64, img_height=64, batch_size=16, small_model=False,
                  content_weight=1, tv_weight=2e5, gen_channels=64):
         self.img_width = img_width
         self.img_height = img_height
         self.batch_size = batch_size
         self.small_model = small_model
-        self.nb_scales = nb_upscales
 
         self.content_weight = content_weight
         self.tv_weight = tv_weight
@@ -286,13 +288,12 @@ class GenerativeNetwork:
 
 class GenerativeNetworkFiner:
     
-    def __init__(self, img_width=28, img_height=28, batch_size=16, nb_upscales=2, small_model=False,
+    def __init__(self, img_width=64, img_height=64, batch_size=16, small_model=False,
                  content_weight=1, tv_weight=2e5, gen_channels=64,finest=False):
         self.img_width = img_width
         self.img_height = img_height
         self.batch_size = batch_size
         self.small_model = small_model
-        self.nb_scales = nb_upscales
         
         self.content_weight = content_weight
         self.tv_weight = tv_weight
@@ -363,7 +364,7 @@ class GenerativeNetworkFiner:
 
 class DeblurGANNetwork:
 
-    def __init__(self, img_width=28, img_height=28, batch_size=16, nb_scales=2):
+    def __init__(self, img_width=64, img_height=64, batch_size=16, nb_scales=2):
         self.img_width = img_width
         self.img_height = img_height
         self.batch_size = batch_size
@@ -380,8 +381,7 @@ class DeblurGANNetwork:
 
     def build_deblurgan_model(self, use_small_deblurgan=False, use_small_discriminator=False):
 
-        self.generative_network = GenerativeNetwork(self.img_width, self.img_height, self.batch_size, nb_upscales=self.nb_scales,
-                                                    small_model=use_small_deblurgan)
+        self.generative_network = GenerativeNetwork(self.img_width, self.img_height, self.batch_size, small_model=use_small_deblurgan)
                                                     
         self.generative_network_finer = GenerativeNetworkFiner(self.img_width, self.img_height, self.batch_size, self.nb_scales,
                                                                                                       use_small_deblurgan, finest =False)
@@ -429,9 +429,9 @@ class DeblurGANNetwork:
 
         self.vgg_network.load_vgg_weight(self.deblurgan_model_)
 
-        deblurgan_optimizer = Adam(lr=1e-4)
-        generator_optimizer = Adam(lr=1e-4)
-        discriminator_optimizer = Adam(lr=1e-4)
+        deblurgan_optimizer = Adam(lr = learning_rate)
+        generator_optimizer = Adam(lr = learning_rate)
+        discriminator_optimizer = Adam(lr = learning_rate)
 
         self.generative_model_.compile(generator_optimizer, dummy_loss)
         self.generative_model_finer_.compile(generator_optimizer, dummy_loss)
@@ -441,19 +441,22 @@ class DeblurGANNetwork:
 
         return self.deblurgan_model_
 
-    def train_full_model(self, image_dir, nb_images=50000, nb_epochs=10, use_small_deblurgan=False,
+    def train_full_model(self, image_dir, nb_images=50000, nb_epochs=450, use_small_deblurgan=False,
                          use_small_discriminator=False):
 
         self.build_deblurgan_model(use_small_deblurgan, use_small_discriminator)
 
         self._train_model(image_dir, nb_images, nb_epochs, load_generative_weights=True, load_discriminator_weights=True)
 
-    def _train_model(self, image_dir, nb_images=80000, nb_epochs=10, pre_train_deblurgan=False,
+    def _train_model(self, image_dir, nb_images=80000, nb_epochs=450, pre_train_deblurgan=False,
                      pre_train_discriminator=False, load_generative_weights=False, load_discriminator_weights=False,
                      save_loss=True, disc_train_flip=0.1):
 
 
-        datagen = ImageDataGenerator(rescale=1. / 255)
+datagen = ImageDataGenerator(rescale=1. / 255,shear_range=0.2,
+                             zoom_range=0.2,rotation_range=20,
+                             width_shift_range=0.2,
+                             height_shift_range=0.2)
 
         early_stop = False
         iteration = 0
@@ -471,7 +474,8 @@ class DeblurGANNetwork:
         for i in range(nb_epochs):
             print()
             print("Epoch : %d" % (i + 1))
-
+            if (i + 1) % 150 == 0:
+                learning_rate = learning_rate / 10
             for x in datagen.flow_from_directory(image_dir, class_mode=None, batch_size=self.batch_size,
                                                  target_size=(self.img_width, self.img_height)):
                 try:
@@ -484,9 +488,10 @@ class DeblurGANNetwork:
                     x_temp = x_temp.transpose((0, 2, 3, 1))
 
                     x_generator = np.empty((self.batch_size, self.img_width, self.img_height, 3))
+                    
 
                     for j in range(self.batch_size):
-                        x_generator[j, :, :, :] = x_temp[j]
+                        x_generator[j, :, :, :] = image.extract_patches_2d(x_temp[j], (64, 64))[0]
 
                     x_generator = x_generator.transpose((0, 3, 1, 2))
 
@@ -647,12 +652,12 @@ if __name__ == "__main__":
     coco_path = "/Users/f/Desktop/Super-Resolution-using-Generative-Adversarial-Networks-master/images/"
 
 
-    deblurgan_network = DeblurGANNetwork(img_width=28, img_height=28, batch_size=1)
+    deblurgan_network = DeblurGANNetwork(img_width=64, img_height=64, batch_size=4)
     deblurgan_network.build_deblurgan_model()
     plot(deblurgan_network.deblurgan_model_, 'DeblurGAN.png', show_shapes=True)
 
     # Fully train the DeblurGAN with VGG loss and Discriminator loss
-    deblurgan_network.train_full_model(coco_path, nb_images=5, nb_epochs=5)
+    deblurgan_network.train_full_model(coco_path, nb_images=4000, nb_epochs=450)
 
 
 
