@@ -453,10 +453,10 @@ class DeblurGANNetwork:
                      save_loss=True, disc_train_flip=0.1):
 
 
-datagen = ImageDataGenerator(rescale=1. / 255,shear_range=0.2,
+        datagen = ImageDataGenerator(rescale=1. / 255,shear_range=0.2,
                              zoom_range=0.2,rotation_range=20,
                              width_shift_range=0.2,
-                             height_shift_range=0.2)
+                             height_shift_range=0.2,seed=0)
 
         early_stop = False
         iteration = 0
@@ -479,6 +479,8 @@ datagen = ImageDataGenerator(rescale=1. / 255,shear_range=0.2,
             for x in datagen.flow_from_directory(image_dir, class_mode=None, batch_size=self.batch_size,
                                                  target_size=(self.img_width, self.img_height)):
                 try:
+                    y = datagen.flow_from_directory(y_dir, class_mode=None, batch_size=self.batch_size,
+                                                target_size=(self.img_width, self.img_height))
                     t1 = time.time()
 
                     x_vgg = x.copy() * 255 # VGG input [0 - 255 scale]
@@ -486,12 +488,23 @@ datagen = ImageDataGenerator(rescale=1. / 255,shear_range=0.2,
                     # resize images
                     x_temp = x.copy()
                     x_temp = x_temp.transpose((0, 2, 3, 1))
+                    y_vgg = y.copy() * 255 # VGG input [0 - 255 scale]
+                    
+                    # resize images
+                    y_temp = y.copy()
+                    y_temp = y_temp.transpose((0, 2, 3, 1))
 
                     x_generator = np.empty((self.batch_size, self.img_width, self.img_height, 3))
+                    y_generator = np.empty((self.batch_size, self.img_width, self.img_height, 3))
                     
 
                     for j in range(self.batch_size):
-                        x_generator[j, :, :, :] = image.extract_patches_2d(x_temp[j], (64, 64))[0]
+                        height, width = x_temp[j][1:]
+                        dy, dx = (self.img_width, self.img_height)
+                        x = np.random.randint(0, width - dx + 1)
+                        y = np.random.randint(0, height - dy + 1)
+                        x_generator[j, :, :, :] = x_temp[j][:, y:(y+dy), x:(x+dx)]
+                        y_generator[j, :, :, :] = y_temp[j][:, y:(y+dy), x:(x+dx)]
 
                     x_generator = x_generator.transpose((0, 3, 1, 2))
 
@@ -561,7 +574,7 @@ datagen = ImageDataGenerator(rescale=1. / 255,shear_range=0.2,
                     X_pred = self.generative_model_finer_.predict([x_generator,X_pred], self.batch_size)
                     X_pred = self.generative_model_finest_.predict([x_generator,X_pred], self.batch_size)
 
-                    X = np.concatenate((X_pred, x * 255))
+                    X = np.concatenate((X_pred, y_generator * 255))
 
                     # Using soft and noisy labels
                     if np.random.uniform() > disc_train_flip:
