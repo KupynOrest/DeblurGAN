@@ -6,6 +6,7 @@ from PIL import Image
 import PIL
 from pdb import set_trace as st
 import random
+import cv2
 
 class UnalignedDataset(BaseDataset):
     def initialize(self, opt):
@@ -26,10 +27,9 @@ class UnalignedDataset(BaseDataset):
     def __getitem__(self, index):
         A_path = self.A_paths[index % self.A_size]
         index_A = index % self.A_size
-        index_B = random.randint(0, self.B_size - 1)
-        B_path = self.B_paths[index_B]
+        B_path = self.B_paths[index % self.A_size]
         # print('(A, B) = (%d, %d)' % (index_A, index_B))
-        A_img = Image.open(A_path).convert('RGB')
+        A_img = Image.open(A_path).convert('L')
         B_img = Image.open(B_path).convert('RGB')
 
         A_img = self.transform(A_img)
