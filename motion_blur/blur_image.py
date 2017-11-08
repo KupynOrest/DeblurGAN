@@ -5,6 +5,7 @@ import os
 from scipy import signal
 from scipy import misc
 from motion_blur.generate_PSF import PSF
+from motion_blur.generate_trajectory import Trajectory
 
 
 class BlurImage(object):
@@ -104,6 +105,8 @@ class BlurImage(object):
 
 
 if __name__ == '__main__':
+
+    trajectory = Trajectory(canvas=256, max_len=256, expl=0.005)
     BlurImage('/Users/mykolam/PycharmProjects/'
               'University/RandomMotionBlur/images/13.png',
               path__to_save='/Users/mykolam/PycharmProjects/University/RandomMotionBlur').\
