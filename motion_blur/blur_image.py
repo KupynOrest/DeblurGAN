@@ -78,8 +78,6 @@ class BlurImage(object):
         if show or save:
             self.__plot_canvas(show, save)
 
-        return result
-
     def __plot_canvas(self, show, save):
         if len(self.result) == 0:
             raise Exception('Please run blur_image() method first.')
@@ -90,7 +88,7 @@ class BlurImage(object):
                 for i in range(len(self.result)):
                         axes[i].imshow(self.result[i])
             else:
-                plt.imshow(self.result[self.part])
+                plt.imshow(self.result[0])
             if show and save:
                 if self.path_to_save is None:
                     raise Exception('Please create Trajectory instance with path_to_save')
@@ -105,9 +103,11 @@ class BlurImage(object):
 
 
 if __name__ == '__main__':
-
-    trajectory = Trajectory(canvas=256, max_len=256, expl=0.005)
+    paths = '/Users/mykolam/PycharmProjects/University/DeblurGAN2'
+    trajectory = Trajectory(canvas=64, max_len=60, expl=0.005, path_to_save=os.path.join(paths, 'trajectory.png')).\
+        fit(show=True, save=True)
+    psf = PSF(canvas=64, trajectory=trajectory, path_to_save=os.path.join(paths, 'PSF.png')).fit(show=True, save=True)
     BlurImage('/Users/mykolam/PycharmProjects/'
-              'University/RandomMotionBlur/images/13.png',
-              path__to_save='/Users/mykolam/PycharmProjects/University/RandomMotionBlur').\
+              'University/RandomMotionBlur/images/13.png', PSFs=psf,
+              path__to_save=paths, part=0).\
         blur_image(save=True, show=True)
