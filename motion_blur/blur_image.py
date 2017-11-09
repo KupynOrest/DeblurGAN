@@ -62,17 +62,23 @@ class BlurImage(object):
                 blured[:, :, 1] = np.array(signal.fftconvolve(blured[:, :, 1], tmp, 'same'))
                 blured[:, :, 2] = np.array(signal.fftconvolve(blured[:, :, 2], tmp, 'same'))
                 blured = cv2.normalize(blured, blured, alpha=0, beta=1, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_32F)
+                blured = cv2.cvtColor(blured, cv2.COLOR_RGB2BGR)
                 result.append(np.abs(blured))
         else:
             psf = psf[0]
             tmp = np.pad(psf, delta // 2, 'constant')
+            # print(tmp.shape)
+            # print(self.original.shape)
             cv2.normalize(tmp, tmp, alpha=0, beta=1, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_32F)
             blured = cv2.normalize(self.original, self.original, alpha=0, beta=1, norm_type=cv2.NORM_MINMAX,
                                    dtype=cv2.CV_32F)
             blured[:, :, 0] = np.array(signal.fftconvolve(blured[:, :, 0], tmp, 'same'))
             blured[:, :, 1] = np.array(signal.fftconvolve(blured[:, :, 1], tmp, 'same'))
             blured[:, :, 2] = np.array(signal.fftconvolve(blured[:, :, 2], tmp, 'same'))
+            # print(blured.shape)
             blured = cv2.normalize(blured, blured, alpha=0, beta=1, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_32F)
+            # print(blured.shape)
+            blured = cv2.cvtColor(blured, cv2.COLOR_RGB2BGR)
             result.append(np.abs(blured))
         self.result = result
         if show or save:
@@ -95,21 +101,22 @@ class BlurImage(object):
             if show and save:
                 if self.path_to_save is None:
                     raise Exception('Please create Trajectory instance with path_to_save')
-                plt.savefig(os.path.join(self.path_to_save, 'blured_' + self.image_path.split('/')[-1]))
+                cv2.imwrite(os.path.join(self.path_to_save, self.image_path.split('/')[-1]), self.result[0] * 255)
                 plt.show()
             elif save:
                 if self.path_to_save is None:
                     raise Exception('Please create Trajectory instance with path_to_save')
-                plt.savefig(os.path.join(self.path_to_save, 'blured_' + self.image_path.split('/')[-1]))
+                cv2.imwrite(os.path.join(self.path_to_save, self.image_path.split('/')[-1]), self.result[0] * 255)
             elif show:
                 plt.show()
 
 
 if __name__ == '__main__':
-    folder = ''
-    folder_to_save = ''
-    params = [0.01, 0.009, 0.008, 0.007, 0.005, 0.003, 0.002, 0.001]
+    folder = '/Users/mykolam/PycharmProjects/University/DeblurGAN2/results_sharp'
+    folder_to_save = '/Users/mykolam/PycharmProjects/University/DeblurGAN2/blured'
+    params = [0.01, 0.009, 0.008, 0.007, 0.005, 0.003]
     for path in os.listdir(folder):
+        # print(path)
         trajectory = Trajectory(canvas=64, max_len=60, expl=np.random.choice(params)).fit()
         psf = PSF(canvas=64, trajectory=trajectory).fit()
         BlurImage(os.path.join(folder, path), PSFs=psf,
