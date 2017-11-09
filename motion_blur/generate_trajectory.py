@@ -94,7 +94,7 @@ class Trajectory(object):
 
         if show or save:
             self.__plot_canvas(show, save)
-        return x
+        return self
 
     def __plot_canvas(self, show, save):
         if self.x is None:
@@ -115,7 +115,8 @@ class Trajectory(object):
             elif show:
                 plt.show()
 
-if __name__ == '__main__':
-    trajectory = Trajectory(expl=0.005, path_to_save='/Users/mykolam/PycharmProjects/University/RandomMotionBlur/main.png')
-    trajectory.fit(True, False)
 
+if __name__ == '__main__':
+    trajectory = Trajectory(expl=0.005,
+                            path_to_save='/Users/mykolam/PycharmProjects/University/RandomMotionBlur/main.png')
+    trajectory.fit(True, False)
