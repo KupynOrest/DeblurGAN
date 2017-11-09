@@ -67,17 +67,13 @@ class BlurImage(object):
         else:
             psf = psf[0]
             tmp = np.pad(psf, delta // 2, 'constant')
-            # print(tmp.shape)
-            # print(self.original.shape)
             cv2.normalize(tmp, tmp, alpha=0, beta=1, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_32F)
             blured = cv2.normalize(self.original, self.original, alpha=0, beta=1, norm_type=cv2.NORM_MINMAX,
                                    dtype=cv2.CV_32F)
             blured[:, :, 0] = np.array(signal.fftconvolve(blured[:, :, 0], tmp, 'same'))
             blured[:, :, 1] = np.array(signal.fftconvolve(blured[:, :, 1], tmp, 'same'))
             blured[:, :, 2] = np.array(signal.fftconvolve(blured[:, :, 2], tmp, 'same'))
-            # print(blured.shape)
             blured = cv2.normalize(blured, blured, alpha=0, beta=1, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_32F)
-            # print(blured.shape)
             blured = cv2.cvtColor(blured, cv2.COLOR_RGB2BGR)
             result.append(np.abs(blured))
         self.result = result
@@ -116,7 +112,6 @@ if __name__ == '__main__':
     folder_to_save = '/Users/mykolam/PycharmProjects/University/DeblurGAN2/blured'
     params = [0.01, 0.009, 0.008, 0.007, 0.005, 0.003]
     for path in os.listdir(folder):
-        # print(path)
         trajectory = Trajectory(canvas=64, max_len=60, expl=np.random.choice(params)).fit()
         psf = PSF(canvas=64, trajectory=trajectory).fit()
         BlurImage(os.path.join(folder, path), PSFs=psf,
