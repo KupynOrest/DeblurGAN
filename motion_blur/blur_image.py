@@ -83,31 +83,35 @@ class BlurImage(object):
             raise Exception('Please run blur_image() method first.')
         else:
             plt.close()
+            plt.axis('off')
             fig, axes = plt.subplots(1, len(self.result), figsize=(10, 10))
             if len(self.result) > 1:
                 for i in range(len(self.result)):
                         axes[i].imshow(self.result[i])
             else:
+                plt.axis('off')
+
                 plt.imshow(self.result[0])
             if show and save:
                 if self.path_to_save is None:
                     raise Exception('Please create Trajectory instance with path_to_save')
-                plt.savefig(os.path.join(self.path_to_save, 'blured.png'))
+                plt.savefig(os.path.join(self.path_to_save, 'blured_' + self.image_path.split('/')[-1]))
                 plt.show()
             elif save:
                 if self.path_to_save is None:
                     raise Exception('Please create Trajectory instance with path_to_save')
-                plt.savefig(os.path.join(self.path_to_save, 'blured.png'))
+                plt.savefig(os.path.join(self.path_to_save, 'blured_' + self.image_path.split('/')[-1]))
             elif show:
                 plt.show()
 
 
 if __name__ == '__main__':
-    paths = '/Users/mykolam/PycharmProjects/University/DeblurGAN2'
-    trajectory = Trajectory(canvas=64, max_len=60, expl=0.005, path_to_save=os.path.join(paths, 'trajectory.png')).\
-        fit(show=True, save=True)
-    psf = PSF(canvas=64, trajectory=trajectory, path_to_save=os.path.join(paths, 'PSF.png')).fit(show=True, save=True)
-    BlurImage('/Users/mykolam/PycharmProjects/'
-              'University/RandomMotionBlur/images/13.png', PSFs=psf,
-              path__to_save=paths, part=0).\
-        blur_image(save=True, show=True)
+    folder = ''
+    folder_to_save = ''
+    params = [0.01, 0.009, 0.008, 0.007, 0.005, 0.003, 0.002, 0.001]
+    for path in os.listdir(folder):
+        trajectory = Trajectory(canvas=64, max_len=60, expl=np.random.choice(params)).fit()
+        psf = PSF(canvas=64, trajectory=trajectory).fit()
+        BlurImage(os.path.join(folder, path), PSFs=psf,
+                  path__to_save=folder_to_save, part=np.random.choice(range(4))).\
+            blur_image(save=True)
