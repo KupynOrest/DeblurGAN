@@ -4,8 +4,8 @@
 Pytorch implementation of the paper DeblurGAN: Blind Motion Deblurring Using Conditional Adversarial Networks.
 
 Our networks takes blurry image as an input and procude the cirresponding sharp estimate, as in example:
-<img src="images/test1_blur.jpg" width="600px"/>
-<img src="images/test1_restored.jpg" width="600px"/>
+<img src="images/test1_blur.jpg" width="400px"/>
+<img src="images/test1_restored.jpg" width="400px"/>
 
 
 Our model is Conditional Wasserstein GAN with Gradient Penalty + Perceptual loss based on VGG-19 activations
