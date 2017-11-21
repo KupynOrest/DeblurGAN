@@ -1,4 +1,4 @@
-# Conditional Adversarial Networks for Image Deblurring
+# DeblurGAN
+arXiv Paper Version (https://arxiv.org/pdf/1711.07064.pdf)
 
-This code havily borrows from this repository - [pix2pix-pytorch](https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix). 
-Additionaly implemented L2 Perceptual Loss based on VGG activations and Wasserstein GAN with Gradient Penalty
+Pytorch implementation of the paper DeblurGAN: Blind Motion Deblurring Using Conditional Adversarial Networks
