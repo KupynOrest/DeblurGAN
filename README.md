@@ -1,16 +1,13 @@
 # DeblurGAN
 [arXiv Paper Version](https://arxiv.org/pdf/1711.07064.pdf)
 
-<img src="images/animation3.gif" width="400px"/> <img src="images/animation4.gif" width="400px"/>
-
 Pytorch implementation of the paper DeblurGAN: Blind Motion Deblurring Using Conditional Adversarial Networks.
 
-Our networks takes blurry image as an input and procude the corresponding sharp estimate, as in example:
-<img src="images/test1_blur.jpg" width="400px"/>
-<img src="images/test1_restored.jpg" width="400px"/>
+Our network takes blurry image as an input and procude the corresponding sharp estimate, as in the example:
+<img src="images/animation3.gif" width="400px"/> <img src="images/animation4.gif" width="400px"/>
 
 
-Our model is Conditional Wasserstein GAN with Gradient Penalty + Perceptual loss based on VGG-19 activations
+The model we use is Conditional Wasserstein GAN with Gradient Penalty + Perceptual loss based on VGG-19 activations. Such architecture also gives good results on other image-to-image translation problems (super resolution, colorization, inpainting, dehazing etc.)
 
 ## How to run
 
@@ -46,6 +43,6 @@ If you find our code helpful in your research or work please cite our paper.
 ```
 
 ## Acknowledgments
-Code borrows heavily from [pix2pix](https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix).
+Code borrows heavily from [pix2pix](https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix). The images were taken from GoPRO test dataset - [DeepDeblur](https://github.com/SeungjunNah/DeepDeblur_release)
 
 
