@@ -1,6 +1,8 @@
 # DeblurGAN
 [arXiv Paper Version](https://arxiv.org/pdf/1711.07064.pdf)
 
+<img src="images/animation3.gif" width="400px"/> <img src="images/animation4.gif" width="400px"/>
+
 Pytorch implementation of the paper DeblurGAN: Blind Motion Deblurring Using Conditional Adversarial Networks.
 
 Our networks takes blurry image as an input and procude the corresponding sharp estimate, as in example:
