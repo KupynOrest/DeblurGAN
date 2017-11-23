@@ -32,6 +32,9 @@ python test.py --dataroot /.path_to_your_data --model test --dataset_mode single
 ## Note: The repository is still being structured, the links to the data, weights and also instructions would be updated soon
 
 ## Citation
+
+If you find our code helpful in your research or work please cite our paper.
+
 ```
 @article{DeblurGAN,
   title = {DeblurGAN: Blind Motion Deblurring Using Conditional Adversarial Networks},
