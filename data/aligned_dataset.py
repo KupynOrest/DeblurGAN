@@ -15,7 +15,7 @@ class AlignedDataset(BaseDataset):
 
         self.AB_paths = sorted(make_dataset(self.dir_AB))
 
-        assert(opt.resize_or_crop == 'resize_and_crop')
+        #assert(opt.resize_or_crop == 'resize_and_crop')
 
         transform_list = [transforms.ToTensor(),
                           transforms.Normalize((0.5, 0.5, 0.5),

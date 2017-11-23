@@ -7,7 +7,7 @@ import util.util as util
 from util.image_pool import ImagePool
 from .base_model import BaseModel
 from . import networks
-from losses import init_loss
+from .losses import init_loss
 
 class ConditionalGAN(BaseModel):
 	def name(self):
@@ -26,7 +26,7 @@ class ConditionalGAN(BaseModel):
 		#Temp Fix for nn.parallel as nn.parallel crashes oc calculating gradient penalty
 		use_parallel = not opt.gan_type == 'wgan-gp'
 		self.netG = networks.define_G(opt.input_nc, opt.output_nc, opt.ngf,
-									  opt.which_model_netG, opt.norm, not opt.no_dropout, self.gpu_ids, use_parallel)
+									  opt.which_model_netG, opt.norm, not opt.no_dropout, self.gpu_ids, use_parallel, opt.learn_residual)
 		if self.isTrain:
 			use_sigmoid = opt.gan_type == 'gan'
 			self.netD = networks.define_D(opt.output_nc, opt.ndf,
@@ -117,7 +117,7 @@ class ConditionalGAN(BaseModel):
 		real_A = util.tensor2im(self.real_A.data)
 		fake_B = util.tensor2im(self.fake_B.data)
 		real_B = util.tensor2im(self.real_B.data)
-		return OrderedDict([('real_A', real_A), ('fake_B', fake_B), ('real_B', real_B)])
+		return OrderedDict([('Blurred_Train', real_A), ('Restored_Train', fake_B), ('Sharp_Train', real_B)])
 
 	def save(self, label):
 		self.save_network(self.netG, 'G', label, self.gpu_ids)

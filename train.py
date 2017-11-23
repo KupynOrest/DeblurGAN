@@ -22,9 +22,10 @@ def train(opt, data_loader, model, visualizer):
 
 			if total_steps % opt.display_freq == 0:
 				results = model.get_current_visuals()
-				print('PSNR = %f' %
-					  (PSNR(results['fake_B'],results['real_B'])))
-				visualizer.display_current_results(results, epoch)
+				psnrMetric = PSNR(results['Restored_Train'],results['Sharp_Train'])
+				print('PSNR on Train = %f' %
+					  (psnrMetric))
+				visualizer.display_current_results(results,epoch)
 
 			if total_steps % opt.print_freq == 0:
 				errors = model.get_current_errors()
