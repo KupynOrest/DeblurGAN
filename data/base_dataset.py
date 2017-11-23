@@ -25,7 +25,7 @@ def get_transform(opt):
             lambda img: __scale_width(img, opt.fineSize)))
     elif opt.resize_or_crop == 'scale_width_and_crop':
         transform_list.append(transforms.Lambda(
-            lambda img: __scale_width(img, opt.loadSize)))
+            lambda img: __scale_width(img, opt.loadSizeX)))
         transform_list.append(transforms.RandomCrop(opt.fineSize))
 
     if opt.isTrain and not opt.no_flip:

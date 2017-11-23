@@ -30,7 +30,7 @@ def get_norm_layer(norm_type='instance'):
 	return norm_layer
 
 
-def define_G(input_nc, output_nc, ngf, which_model_netG, norm='batch', use_dropout=False, gpu_ids=[], use_parallel = True):
+def define_G(input_nc, output_nc, ngf, which_model_netG, norm='batch', use_dropout=False, gpu_ids=[], use_parallel = True, learn_residual = False):
 	netG = None
 	use_gpu = len(gpu_ids) > 0
 	norm_layer = get_norm_layer(norm_type=norm)
@@ -39,13 +39,13 @@ def define_G(input_nc, output_nc, ngf, which_model_netG, norm='batch', use_dropo
 		assert(torch.cuda.is_available())
 
 	if which_model_netG == 'resnet_9blocks':
-		netG = ResnetGenerator(input_nc, output_nc, ngf, norm_layer=norm_layer, use_dropout=use_dropout, n_blocks=9, gpu_ids=gpu_ids, use_parallel=use_parallel)
+		netG = ResnetGenerator(input_nc, output_nc, ngf, norm_layer=norm_layer, use_dropout=use_dropout, n_blocks=9, gpu_ids=gpu_ids, use_parallel=use_parallel, learn_residual = learn_residual)
 	elif which_model_netG == 'resnet_6blocks':
-		netG = ResnetGenerator(input_nc, output_nc, ngf, norm_layer=norm_layer, use_dropout=use_dropout, n_blocks=6, gpu_ids=gpu_ids, use_parallel=use_parallel)
+		netG = ResnetGenerator(input_nc, output_nc, ngf, norm_layer=norm_layer, use_dropout=use_dropout, n_blocks=6, gpu_ids=gpu_ids, use_parallel=use_parallel, learn_residual = learn_residual)
 	elif which_model_netG == 'unet_128':
-		netG = UnetGenerator(input_nc, output_nc, 7, ngf, norm_layer=norm_layer, use_dropout=use_dropout, gpu_ids=gpu_ids, use_parallel=use_parallel)
+		netG = UnetGenerator(input_nc, output_nc, 7, ngf, norm_layer=norm_layer, use_dropout=use_dropout, gpu_ids=gpu_ids, use_parallel=use_parallel, learn_residual = learn_residual)
 	elif which_model_netG == 'unet_256':
-		netG = UnetGenerator(input_nc, output_nc, 8, ngf, norm_layer=norm_layer, use_dropout=use_dropout, gpu_ids=gpu_ids, use_parallel=use_parallel)
+		netG = UnetGenerator(input_nc, output_nc, 8, ngf, norm_layer=norm_layer, use_dropout=use_dropout, gpu_ids=gpu_ids, use_parallel=use_parallel, learn_residual = learn_residual)
 	else:
 		raise NotImplementedError('Generator model name [%s] is not recognized' % which_model_netG)
 	if len(gpu_ids) > 0:
@@ -93,7 +93,7 @@ def print_network(net):
 # Code and idea originally from Justin Johnson's architecture.
 # https://github.com/jcjohnson/fast-neural-style/
 class ResnetGenerator(nn.Module):
-	def __init__(self, input_nc, output_nc, ngf=64, norm_layer=nn.BatchNorm2d, use_dropout=False, n_blocks=6, gpu_ids=[], use_parallel = True, padding_type='reflect'):
+	def __init__(self, input_nc, output_nc, ngf=64, norm_layer=nn.BatchNorm2d, use_dropout=False, n_blocks=6, gpu_ids=[], use_parallel = True, learn_residual = False, padding_type='reflect'):
 		assert(n_blocks >= 0)
 		super(ResnetGenerator, self).__init__()
 		self.input_nc = input_nc
@@ -101,6 +101,7 @@ class ResnetGenerator(nn.Module):
 		self.ngf = ngf
 		self.gpu_ids = gpu_ids
 		self.use_parallel = use_parallel
+		self.learn_residual = learn_residual
 		if type(norm_layer) == functools.partial:
 			use_bias = norm_layer.func == nn.InstanceNorm2d
 		else:
@@ -140,9 +141,13 @@ class ResnetGenerator(nn.Module):
 
 	def forward(self, input):
 		if self.gpu_ids and isinstance(input.data, torch.cuda.FloatTensor) and self.use_parallel:
-			return nn.parallel.data_parallel(self.model, input, self.gpu_ids)
+			output = nn.parallel.data_parallel(self.model, input, self.gpu_ids)
 		else:
-			return self.model(input)
+			output = self.model(input)
+		if self.learn_residual:
+			output = input + output
+			output = torch.clamp(output,min = -1,max = 1)
+		return output
 
 
 # Define a resnet block
@@ -194,10 +199,11 @@ class ResnetBlock(nn.Module):
 # at the bottleneck
 class UnetGenerator(nn.Module):
 	def __init__(self, input_nc, output_nc, num_downs, ngf=64,
-				 norm_layer=nn.BatchNorm2d, use_dropout=False, gpu_ids=[], use_parallel = True):
+				 norm_layer=nn.BatchNorm2d, use_dropout=False, gpu_ids=[], use_parallel = True, learn_residual = False):
 		super(UnetGenerator, self).__init__()
 		self.gpu_ids = gpu_ids
 		self.use_parallel = use_parallel
+		self.learn_residual = learn_residual
 		# currently support only input_nc == output_nc
 		assert(input_nc == output_nc)
 
@@ -214,9 +220,13 @@ class UnetGenerator(nn.Module):
 
 	def forward(self, input):
 		if self.gpu_ids and isinstance(input.data, torch.cuda.FloatTensor) and self.use_parallel:
-			return nn.parallel.data_parallel(self.model, input, self.gpu_ids)
+			output = nn.parallel.data_parallel(self.model, input, self.gpu_ids)
 		else:
-			return self.model(input)
+			output = self.model(input)
+		if self.learn_residual:
+			output = input + output
+			output = torch.clamp(output,min = -1,max = 1)
+		return output
 
 
 # Defines the submodule with skip connection.

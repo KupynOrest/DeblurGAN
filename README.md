@@ -1,6 +1,8 @@
 # DeblurGAN
 [arXiv Paper Version](https://arxiv.org/pdf/1711.07064.pdf)
 
+<img src="images/animation3.gif" width="400px"/> <img src="images/animation4.gif" width="400px"/>
+
 Pytorch implementation of the paper DeblurGAN: Blind Motion Deblurring Using Conditional Adversarial Networks.
 
 Our networks takes blurry image as an input and procude the corresponding sharp estimate, as in example:
@@ -28,6 +30,17 @@ python test.py --dataroot /.path_to_your_data --model test --dataset_mode single
 ```
 
 ## Note: The repository is still being structured, the links to the data, weights and also instructions would be updated soon
+
+## Citation
+```
+@article{DeblurGAN,
+  title = {DeblurGAN: Blind Motion Deblurring Using Conditional Adversarial Networks},
+  author = {Kupyn, Orest and Budzan, Volodymyr and Mykhailych, Mykola and Mishkin, Dmytro and Matas, Jiri},
+  journal = {ArXiv e-prints},
+  eprint = {1711.07064},
+  year = 2017
+}
+```
 
 ## Acknowledgments
 Code borrows heavily from [pix2pix](https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix).
