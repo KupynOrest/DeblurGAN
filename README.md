@@ -25,6 +25,8 @@ To test a model put your blurry images into a folder and run:
 ```bash
 python test.py --dataroot /.path_to_your_data --model test --dataset_mode single --learn_residual
 ```
+## Data
+Download dataset for Object Detection benchmark from [Google Drive](https://drive.google.com/file/d/1CPMBmRj-jBDO2ax4CxkBs9iczIFrs8VA/view?usp=sharing)
 
 ## Note: The repository is still being structured, the links to the data, weights and also instructions would be updated soon
 
