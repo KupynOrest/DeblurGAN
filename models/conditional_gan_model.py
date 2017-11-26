@@ -9,6 +9,11 @@ from .base_model import BaseModel
 from . import networks
 from .losses import init_loss
 
+try:
+	xrange          # Python2
+except NameError:
+	xrange = range  # Python 3
+
 class ConditionalGAN(BaseModel):
 	def name(self):
 		return 'ConditionalGANModel'
