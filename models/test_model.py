@@ -15,7 +15,7 @@ class TestModel(BaseModel):
         self.input_A = self.Tensor(opt.batchSize, opt.input_nc, opt.fineSize, opt.fineSize)
 
         self.netG = networks.define_G(opt.input_nc, opt.output_nc, opt.ngf,
-                                      opt.which_model_netG, opt.norm, not opt.no_dropout, self.gpu_ids, use_parallel,
+                                      opt.which_model_netG, opt.norm, not opt.no_dropout, self.gpu_ids, False,
                                       opt.learn_residual)
         which_epoch = opt.which_epoch
         self.load_network(self.netG, 'G', which_epoch)
