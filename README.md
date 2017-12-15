@@ -29,6 +29,7 @@ python test.py --dataroot /.path_to_your_data --model test --dataset_mode single
 Download dataset for Object Detection benchmark from [Google Drive](https://drive.google.com/file/d/1CPMBmRj-jBDO2ax4CxkBs9iczIFrs8VA/view?usp=sharing)
 
 ## Note: The repository is still being structured, the links to the data, weights and also instructions would be updated soon
+### The code used to create the paper contains a bug in PSNR calculation so real results are slightly lower.
 
 ## Citation
 
