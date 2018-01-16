@@ -28,8 +28,8 @@ python test.py --dataroot /.path_to_your_data --model test --dataset_mode single
 ## Data
 Download dataset for Object Detection benchmark from [Google Drive](https://drive.google.com/file/d/1CPMBmRj-jBDO2ax4CxkBs9iczIFrs8VA/view?usp=sharing)
 
-The code used to create the paper contains a bug in PSNR calculation, found by Huaijin Chen from Rice university, results recalculation are present below.
-<img src="images/results.png" width="400px"/> <img src="images/animation4.gif" width="400px"/>
+The code used to create the paper contains a bug in PSNR calculation, found by Huaijin Chen from Rice university, results recalculation are present below. <br>
+<img src="images/results.png" width="400px"/>
 
 ## Citation
 
