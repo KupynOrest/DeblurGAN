@@ -31,6 +31,18 @@ Download dataset for Object Detection benchmark from [Google Drive](https://driv
 The code used to create the paper contains a bug in PSNR calculation, found by Huaijin Chen from Rice university, results recalculation are present below. <br>
 <img src="images/results.png" width="400px"/>
 
+## Train
+
+If you want to train the model on your data run the following command to create image pairs:
+```bash
+python datasets/combine_A_and_B.py --fold_A /path/to/data/A --fold_B /path/to/data/B --fold_AB /path/to/data
+```
+And then the following command to train the model
+
+```bash
+python train.py --dataroot /.path_to_your_data --learn_residual --resize_or_crop crop --fineSize CROP_SIZE (we used 256)
+```
+
 ## Citation
 
 If you find our code helpful in your research or work please cite our paper.
