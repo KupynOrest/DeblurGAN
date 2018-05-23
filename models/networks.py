@@ -128,7 +128,7 @@ class ResnetGenerator(nn.Module):
 		for i in range(n_downsampling):
 			mult = 2**(n_downsampling - i)
 			model += [nn.ConvTranspose2d(ngf * mult, int(ngf * mult / 2),
-										 kernel_size=4, stride=2,
+										 kernel_size=3, stride=2,
 										 padding=1,
 										 bias=use_bias),
 					  norm_layer(int(ngf * mult / 2)),
