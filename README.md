@@ -28,9 +28,6 @@ python test.py --dataroot /.path_to_your_data --model test --dataset_mode single
 ## Data
 Download dataset for Object Detection benchmark from [Google Drive](https://drive.google.com/file/d/1CPMBmRj-jBDO2ax4CxkBs9iczIFrs8VA/view?usp=sharing)
 
-The code used to create the paper contains a bug in PSNR calculation, found by Huaijin Chen from Rice university, results recalculation are present below. <br>
-<img src="images/results.png" width="400px"/>
-
 ## Train
 
 If you want to train the model on your data run the following command to create image pairs:
@@ -42,6 +39,14 @@ And then the following command to train the model
 ```bash
 python train.py --dataroot /.path_to_your_data --learn_residual --resize_or_crop crop --fineSize CROP_SIZE (we used 256)
 ```
+
+## Other Implementations
+
+[Keras Blog](https://blog.sicara.com/keras-generative-adversarial-networks-image-deblurring-45e3ab6977b5)
+
+[Keras Repository](https://github.com/RaphaelMeudec/deblur-gan)
+
+
 
 ## Citation
 
