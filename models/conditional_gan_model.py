@@ -89,7 +89,7 @@ class ConditionalGAN(BaseModel):
 	def backward_D(self):
 		self.loss_D = self.discLoss.get_loss(self.netD, self.real_A, self.fake_B, self.real_B)
 
-		self.loss_D.backward()
+		self.loss_D.backward(retain_graph=True)
 
 	def backward_G(self):
 		self.loss_G_GAN = self.discLoss.get_g_loss(self.netD, self.real_A, self.fake_B)
