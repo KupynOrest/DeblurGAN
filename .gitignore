@@ -1,0 +1,8 @@
+datasets/small/*
+datasets/gopro_large/*
+datasets/test/*
+checkpoints/*
+results/*
+
+__pycache__
+*/__pycache__

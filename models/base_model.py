@@ -1,5 +1,6 @@
 import os
 import torch
+from collections import OrderedDict
 
 
 class BaseModel():
@@ -50,7 +51,16 @@ class BaseModel():
     def load_network(self, network, network_label, epoch_label):
         save_filename = '%s_net_%s.pth' % (epoch_label, network_label)
         save_path = os.path.join(self.save_dir, save_filename)
-        network.load_state_dict(torch.load(save_path))
+
+        # AARON added, to handle load network with extra keys (deprecated issue)
+        saved_state_dict = torch.load(save_path)
+        new_state_dict = OrderedDict()
+        for key, value in saved_state_dict.items():
+            if key in network.state_dict().keys():
+                new_state_dict[key] = value
+
+        # load the new pruned state dict
+        network.load_state_dict(new_state_dict)
 
     def update_learning_rate():
         pass
