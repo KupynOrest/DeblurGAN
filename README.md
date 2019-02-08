@@ -15,7 +15,7 @@ The model we use is Conditional Wasserstein GAN with Gradient Penalty + Perceptu
 - NVIDIA GPU + CUDA CuDNN (CPU untested, feedback appreciated)
 - Pytorch
 
-Download weights from [Dropbox](https://www.dropbox.com/s/5r6cy0x72s8x9yf/latest_net_G.pth?dl=0) . Note that during the inference you need to keep only Generator weights.
+Download weights from [Google Drive](https://drive.google.com/file/d/1liKzdjMRHZ-i5MWhC72EL7UZLNPj5_8Y/view?usp=sharing) . Note that during the inference you need to keep only Generator weights.
 
 Put the weights into 
 ```bash
