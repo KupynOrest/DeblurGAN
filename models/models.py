@@ -5,9 +5,9 @@ def create_model(opt):
 	if opt.model == 'test':
 		assert (opt.dataset_mode == 'single')
 		from .test_model import TestModel
-		model = TestModel()
+		model = TestModel( opt )
 	else:
-		model = ConditionalGAN()
-	model.initialize(opt)
+		model = ConditionalGAN(opt)
+	# model.initialize(opt)
 	print("model [%s] was created" % (model.name()))
 	return model

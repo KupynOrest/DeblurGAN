@@ -9,9 +9,9 @@ class TestModel(BaseModel):
     def name(self):
         return 'TestModel'
 
-    def initialize(self, opt):
+    def __init__(self, opt):
         assert(not opt.isTrain)
-        BaseModel.initialize(self, opt)
+        super(TestModel, self).__init__(opt)
         self.input_A = self.Tensor(opt.batchSize, opt.input_nc, opt.fineSize, opt.fineSize)
 
         self.netG = networks.define_G(opt.input_nc, opt.output_nc, opt.ngf,

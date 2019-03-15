@@ -18,14 +18,12 @@ class ConditionalGAN(BaseModel):
 	def name(self):
 		return 'ConditionalGANModel'
 
-	def initialize(self, opt):
-		BaseModel.initialize(self, opt)
+	def __init__(self, opt):
+		super(ConditionalGAN, self).__init__(opt)
 		self.isTrain = opt.isTrain
 		# define tensors
-		self.input_A = self.Tensor(opt.batchSize, opt.input_nc,
-								   opt.fineSize, opt.fineSize)
-		self.input_B = self.Tensor(opt.batchSize, opt.output_nc,
-								   opt.fineSize, opt.fineSize)
+		self.input_A = self.Tensor(opt.batchSize, opt.input_nc,  opt.fineSize, opt.fineSize)
+		self.input_B = self.Tensor(opt.batchSize, opt.output_nc, opt.fineSize, opt.fineSize)
 
 		# load/define networks
 		#Temp Fix for nn.parallel as nn.parallel crashes oc calculating gradient penalty
