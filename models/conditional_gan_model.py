@@ -111,9 +111,9 @@ class ConditionalGAN(BaseModel):
 		self.optimizer_G.step()
 
 	def get_current_errors(self):
-		return OrderedDict([('G_GAN', self.loss_G_GAN.data[0]),
-							('G_L1', self.loss_G_Content.data[0]),
-							('D_real+fake', self.loss_D.data[0])
+		return OrderedDict([('G_GAN', self.loss_G_GAN.item()),
+							('G_L1', self.loss_G_Content.item()),
+							('D_real+fake', self.loss_D.item())
 							])
 
 	def get_current_visuals(self):

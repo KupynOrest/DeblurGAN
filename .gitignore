@@ -5,3 +5,5 @@ modules.xml
 vcs.xml
 workspace.xml
 *.pyc
+*.png
+*.txt

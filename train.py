@@ -4,6 +4,7 @@ from data.data_loader import CreateDataLoader
 from models.models import create_model
 from util.visualizer import Visualizer
 from util.metrics import PSNR, SSIM
+from multiprocessing import freeze_support
 
 def train(opt, data_loader, model, visualizer):
 	dataset = data_loader.load_data()
@@ -50,9 +51,12 @@ def train(opt, data_loader, model, visualizer):
 
 		if epoch > opt.niter:
 			model.update_learning_rate()
-			
-opt = TrainOptions().parse()
-data_loader = CreateDataLoader(opt)
-model = create_model(opt)
-visualizer = Visualizer(opt)
-train(opt, data_loader, model, visualizer)
+
+if __name__ == "__main__":
+	freeze_support()
+
+	opt = TrainOptions().parse()
+	data_loader = CreateDataLoader(opt)
+	model = create_model(opt)
+	visualizer = Visualizer(opt)
+	train(opt, data_loader, model, visualizer)

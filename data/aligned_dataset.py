@@ -8,7 +8,8 @@ from PIL import Image
 
 
 class AlignedDataset(BaseDataset):
-    def initialize(self, opt):
+    def __init__(self, opt):
+        # super(AlignedDataset,self).__init__(opt)
         self.opt = opt
         self.root = opt.dataroot
         self.dir_AB = os.path.join(opt.dataroot, opt.phase)
