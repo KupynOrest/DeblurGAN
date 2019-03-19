@@ -1,9 +1,5 @@
-DeblurGAN.iml
-encodings.xml
-misc.xml
-modules.xml
-vcs.xml
-workspace.xml
+*.iml
+*.xml
 *.pyc
 *.png
 *.txt

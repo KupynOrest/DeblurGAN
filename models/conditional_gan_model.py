@@ -28,13 +28,17 @@ class ConditionalGAN(BaseModel):
 		# load/define networks
 		#Temp Fix for nn.parallel as nn.parallel crashes oc calculating gradient penalty
 		use_parallel = not opt.gan_type == 'wgan-gp'
-		self.netG = networks.define_G(opt.input_nc, opt.output_nc, opt.ngf,
-									  opt.which_model_netG, opt.norm, not opt.no_dropout, self.gpu_ids, use_parallel, opt.learn_residual)
+		print("Use Parallel = ", "True" if use_parallel else "False")
+		self.netG = networks.define_G(
+			opt.input_nc, opt.output_nc, opt.ngf, opt.which_model_netG, opt.norm,
+			not opt.no_dropout, self.gpu_ids, use_parallel, opt.learn_residual
+		)
 		if self.isTrain:
 			use_sigmoid = opt.gan_type == 'gan'
-			self.netD = networks.define_D(opt.output_nc, opt.ndf,
-										  opt.which_model_netD,
-										  opt.n_layers_D, opt.norm, use_sigmoid, self.gpu_ids, use_parallel)
+			self.netD = networks.define_D(
+				opt.output_nc, opt.ndf, opt.which_model_netD,
+				opt.n_layers_D, opt.norm, use_sigmoid, self.gpu_ids, use_parallel
+			)
 		if not self.isTrain or opt.continue_train:
 			self.load_network(self.netG, 'G', opt.which_epoch)
 			if self.isTrain:
@@ -45,10 +49,8 @@ class ConditionalGAN(BaseModel):
 			self.old_lr = opt.lr
 
 			# initialize optimizers
-			self.optimizer_G = torch.optim.Adam(self.netG.parameters(),
-												lr=opt.lr, betas=(opt.beta1, 0.999))
-			self.optimizer_D = torch.optim.Adam(self.netD.parameters(),
-												lr=opt.lr, betas=(opt.beta1, 0.999))
+			self.optimizer_G = torch.optim.Adam( self.netG.parameters(), lr=opt.lr, betas=(opt.beta1, 0.999) )
+			self.optimizer_D = torch.optim.Adam( self.netD.parameters(), lr=opt.lr, betas=(opt.beta1, 0.999) )
 												
 			self.criticUpdates = 5 if opt.gan_type == 'wgan-gp' else 1
 			
@@ -63,10 +65,10 @@ class ConditionalGAN(BaseModel):
 
 	def set_input(self, input):
 		AtoB = self.opt.which_direction == 'AtoB'
-		input_A = input['A' if AtoB else 'B']
-		input_B = input['B' if AtoB else 'A']
-		self.input_A.resize_(input_A.size()).copy_(input_A)
-		self.input_B.resize_(input_B.size()).copy_(input_B)
+		inputA = input['A' if AtoB else 'B']
+		inputB = input['B' if AtoB else 'A']
+		self.input_A.resize_(inputA.size()).copy_(inputA)
+		self.input_B.resize_(inputB.size()).copy_(inputB)
 		self.image_paths = input['A_paths' if AtoB else 'B_paths']
 
 	def forward(self):

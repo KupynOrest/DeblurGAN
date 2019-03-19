@@ -5,7 +5,7 @@ checkpoints_dir: ./checkpoints
 continue_train: False
 dataroot: D:\Photos\TrainingData\BlurredSharp\combined
 dataset_mode: aligned
-display_freq: 20
+display_freq: 100
 display_id: 1
 display_port: 8097
 display_single_pane_ncols: 0
@@ -19,7 +19,7 @@ input_nc: 3
 isTrain: True
 lambda_A: 100.0
 lambda_B: 10.0
-learn_residual: True
+learn_residual: False
 loadSizeX: 640
 loadSizeY: 360
 lr: 0.0001
@@ -40,7 +40,7 @@ output_nc: 3
 phase: train
 pool_size: 50
 print_freq: 100
-resize_or_crop: crop
+resize_or_crop: resize_and_crop
 save_epoch_freq: 5
 save_latest_freq: 5000
 serial_batches: False

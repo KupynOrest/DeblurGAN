@@ -23,10 +23,9 @@ def train(opt, data_loader, model, visualizer):
 
 			if total_steps % opt.display_freq == 0:
 				results = model.get_current_visuals()
-				psnrMetric = PSNR(results['Restored_Train'],results['Sharp_Train'])
-				print('PSNR on Train = %f' %
-					  (psnrMetric))
-				visualizer.display_current_results(results,epoch)
+				psnrMetric = PSNR(results['Restored_Train'], results['Sharp_Train'])
+				print('PSNR on Train = %f' % psnrMetric)
+				visualizer.display_current_results(results, epoch)
 
 			if total_steps % opt.print_freq == 0:
 				errors = model.get_current_errors()
@@ -36,26 +35,31 @@ def train(opt, data_loader, model, visualizer):
 					visualizer.plot_current_errors(epoch, float(epoch_iter)/dataset_size, opt, errors)
 
 			if total_steps % opt.save_latest_freq == 0:
-				print('saving the latest model (epoch %d, total_steps %d)' %
-					  (epoch, total_steps))
+				print('saving the latest model (epoch %d, total_steps %d)' % (epoch, total_steps))
 				model.save('latest')
 
 		if epoch % opt.save_epoch_freq == 0:
-			print('saving the model at the end of epoch %d, iters %d' %
-				  (epoch, total_steps))
+			print('saving the model at the end of epoch %d, iters %d' % (epoch, total_steps))
 			model.save('latest')
 			model.save(epoch)
 
-		print('End of epoch %d / %d \t Time Taken: %d sec' %
-			  (epoch, opt.niter + opt.niter_decay, time.time() - epoch_start_time))
+		print('End of epoch %d / %d \t Time Taken: %d sec' % (epoch, opt.niter + opt.niter_decay, time.time() - epoch_start_time))
 
 		if epoch > opt.niter:
 			model.update_learning_rate()
 
-if __name__ == "__main__":
+
+if '__main__' == __name__:
 	freeze_support()
 
+	# python train.py --dataroot /.path_to_your_data --learn_residual --resize_or_crop crop --fineSize CROP_SIZE (we used 256)
+
 	opt = TrainOptions().parse()
+	opt.dataroot = 'D:\Photos\TrainingData\BlurredSharp\combined'
+	opt.learn_residual = True
+	opt.resize_or_crop = "crop"
+	opt.fineSize = 256
+	opt.gan_type = "gan"
 	data_loader = CreateDataLoader(opt)
 	model = create_model(opt)
 	visualizer = Visualizer(opt)
