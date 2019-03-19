@@ -26,7 +26,7 @@ class ConditionalGAN(BaseModel):
 		self.input_B = self.Tensor(opt.batchSize, opt.output_nc, opt.fineSize, opt.fineSize)
 
 		# load/define networks
-		#Temp Fix for nn.parallel as nn.parallel crashes oc calculating gradient penalty
+		# Temp Fix for nn.parallel as nn.parallel crashes oc calculating gradient penalty
 		use_parallel = not opt.gan_type == 'wgan-gp'
 		print("Use Parallel = ", "True" if use_parallel else "False")
 		self.netG = networks.define_G(

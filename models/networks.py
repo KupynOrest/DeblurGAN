@@ -245,8 +245,9 @@ class ResnetBlock(nn.Module):
 # if |num_downs| == 7, image of size 128x128 will become of size 1x1
 # at the bottleneck
 class UnetGenerator(nn.Module):
-	def __init__(self, input_nc, output_nc, num_downs, ngf=64,
-				 norm_layer=nn.BatchNorm2d, use_dropout=False, gpu_ids=[], use_parallel = True, learn_residual = False):
+	def __init__(
+			self, input_nc, output_nc, num_downs, ngf=64, norm_layer=nn.BatchNorm2d,
+			use_dropout=False, gpu_ids=[], use_parallel = True, learn_residual = False):
 		super(UnetGenerator, self).__init__()
 		self.gpu_ids = gpu_ids
 		self.use_parallel = use_parallel
@@ -272,7 +273,7 @@ class UnetGenerator(nn.Module):
 			output = self.model(input)
 		if self.learn_residual:
 			output = input + output
-			output = torch.clamp(output,min = -1,max = 1)
+			output = torch.clamp(output, min=-1, max=1)
 		return output
 
 
@@ -280,8 +281,9 @@ class UnetGenerator(nn.Module):
 # X -------------------identity---------------------- X
 #   |-- downsampling -- |submodule| -- upsampling --|
 class UnetSkipConnectionBlock(nn.Module):
-	def __init__(self, outer_nc, inner_nc,
-				 submodule=None, outermost=False, innermost=False, norm_layer=nn.BatchNorm2d, use_dropout=False):
+	def __init__(
+			self, outer_nc, inner_nc, submodule=None,
+			outermost=False, innermost=False, norm_layer=nn.BatchNorm2d, use_dropout=False):
 		super(UnetSkipConnectionBlock, self).__init__()
 		self.outermost = outermost
 		if type(norm_layer) == functools.partial:
@@ -289,20 +291,27 @@ class UnetSkipConnectionBlock(nn.Module):
 		else:
 			use_bias = norm_layer == nn.InstanceNorm2d
 
-		downconv = nn.Conv2d(outer_nc, inner_nc, kernel_size=4,
-							 stride=2, padding=1, bias=use_bias)
+		downconv = nn.Conv2d( outer_nc, inner_nc, kernel_size=4, stride=2, padding=1, bias=use_bias)
 		downrelu = nn.LeakyReLU(0.2, True)
 		downnorm = norm_layer(inner_nc)
 		uprelu = nn.ReLU(True)
 		upnorm = norm_layer(outer_nc)
 
 		if outermost:
-			upconv = nn.ConvTranspose2d(inner_nc * 2, outer_nc,
-										kernel_size=4, stride=2,
-										padding=1)
-			down = [downconv]
-			up = [uprelu, upconv, nn.Tanh()]
-			model = down + [submodule] + up
+			# upconv = nn.ConvTranspose2d(inner_nc * 2, outer_nc, kernel_size=4, stride=2, padding=1)
+			# down = [downconv]
+			# up = [uprelu, upconv, nn.Tanh()]
+			# model = down + [submodule] + up
+			model = [
+				# Down
+				nn.Conv2d( outer_nc, inner_nc, kernel_size=4, stride=2, padding=1, bias=use_bias),
+
+				submodule,
+				# Up
+				nn.ReLU(True),
+				nn.ConvTranspose2d(inner_nc * 2, outer_nc, kernel_size=4, stride=2, padding=1),
+				nn.Tanh()
+			]
 		elif innermost:
 			upconv = nn.ConvTranspose2d(inner_nc, outer_nc,
 										kernel_size=4, stride=2,

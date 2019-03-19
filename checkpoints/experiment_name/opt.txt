@@ -42,7 +42,7 @@ pool_size: 50
 print_freq: 100
 resize_or_crop: resize_and_crop
 save_epoch_freq: 5
-save_latest_freq: 5000
+save_latest_freq: 1000
 serial_batches: False
 which_direction: AtoB
 which_epoch: latest

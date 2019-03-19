@@ -49,7 +49,7 @@ def train(opt, data_loader, model, visualizer):
 			model.update_learning_rate()
 
 
-if '__main__' == __name__:
+if __name__ == '__main__':
 	freeze_support()
 
 	# python train.py --dataroot /.path_to_your_data --learn_residual --resize_or_crop crop --fineSize CROP_SIZE (we used 256)
@@ -60,6 +60,8 @@ if '__main__' == __name__:
 	opt.resize_or_crop = "crop"
 	opt.fineSize = 256
 	opt.gan_type = "gan"
+	# opt.which_model_netG = "unet_256"
+
 	data_loader = CreateDataLoader(opt)
 	model = create_model(opt)
 	visualizer = Visualizer(opt)
