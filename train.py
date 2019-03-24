@@ -62,6 +62,12 @@ if __name__ == '__main__':
 	opt.gan_type = "gan"
 	# opt.which_model_netG = "unet_256"
 
+	# default = 5000
+	opt.save_latest_freq = 100
+
+	# default = 100
+	opt.print_freq = 20
+
 	data_loader = CreateDataLoader(opt)
 	model = create_model(opt)
 	visualizer = Visualizer(opt)
