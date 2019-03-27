@@ -12,8 +12,8 @@ from torch.autograd import Variable
 # Functions
 ###############################################################################
 
-class ContentLoss():
-	def initialize(self, loss):
+class ContentLoss:
+	def __init__(self, loss):
 		self.criterion = loss
 			
 	def get_loss(self, fakeIm, realIm):
@@ -33,7 +33,7 @@ class PerceptualLoss():
 				break
 		return model
 		
-	def initialize(self, loss):
+	def __init__(self, loss):
 		self.criterion = loss
 		self.contentFunc = self.contentFunc()
 			
@@ -45,8 +45,9 @@ class PerceptualLoss():
 		return loss
 		
 class GANLoss(nn.Module):
-	def __init__(self, use_l1=True, target_real_label=1.0, target_fake_label=0.0,
-				 tensor=torch.FloatTensor):
+	def __init__(
+			self, use_l1=True, target_real_label=1.0,
+			target_fake_label=0.0, tensor=torch.FloatTensor):
 		super(GANLoss, self).__init__()
 		self.real_label = target_real_label
 		self.fake_label = target_fake_label
@@ -80,11 +81,11 @@ class GANLoss(nn.Module):
 		target_tensor = self.get_target_tensor(input, target_is_real)
 		return self.loss(input, target_tensor)
 
-class DiscLoss():
+class DiscLoss:
 	def name(self):
 		return 'DiscLoss'
 
-	def initialize(self, opt, tensor):
+	def __init__(self, opt, tensor):
 		self.criterionGAN = GANLoss(use_l1=False, tensor=tensor)
 		self.fake_AB_pool = ImagePool(opt.pool_size)
 		
@@ -112,8 +113,9 @@ class DiscLossLS(DiscLoss):
 	def name(self):
 		return 'DiscLossLS'
 
-	def initialize(self, opt, tensor):
-		DiscLoss.initialize(self, opt, tensor)
+	def __init__(self, opt, tensor):
+		super(DiscLoss, self).__init__(opt, tensor)
+		# DiscLoss.initialize(self, opt, tensor)
 		self.criterionGAN = GANLoss(use_l1=True, tensor=tensor)
 		
 	def get_g_loss(self,net, realA, fakeB):
@@ -126,8 +128,9 @@ class DiscLossWGANGP(DiscLossLS):
 	def name(self):
 		return 'DiscLossWGAN-GP'
 
-	def initialize(self, opt, tensor):
-		DiscLossLS.initialize(self, opt, tensor)
+	def __init__(self, opt, tensor):
+		super(DiscLossWGANGP, self).__init__(opt, tensor)
+		# DiscLossLS.initialize(self, opt, tensor)
 		self.LAMBDA = 10
 		
 	def get_g_loss(self, net, realA, fakeB):
@@ -147,9 +150,10 @@ class DiscLossWGANGP(DiscLossLS):
 		
 		disc_interpolates = netD.forward(interpolates)
 
-		gradients = autograd.grad(outputs=disc_interpolates, inputs=interpolates,
-								  grad_outputs=torch.ones(disc_interpolates.size()).cuda(),
-								  create_graph=True, retain_graph=True, only_inputs=True)[0]
+		gradients = autograd.grad(
+			outputs=disc_interpolates, inputs=interpolates, grad_outputs=torch.ones(disc_interpolates.size()).cuda(),
+			create_graph=True, retain_graph=True, only_inputs=True
+		)[0]
 
 		gradient_penalty = ((gradients.norm(2, dim=1) - 1) ** 2).mean() * self.LAMBDA
 		return gradient_penalty
@@ -168,25 +172,25 @@ class DiscLossWGANGP(DiscLossLS):
 
 
 def init_loss(opt, tensor):
-	disc_loss = None
-	content_loss = None
+	# disc_loss = None
+	# content_loss = None
 	
 	if opt.model == 'content_gan':
-		content_loss = PerceptualLoss()
-		content_loss.initialize(nn.MSELoss())
+		content_loss = PerceptualLoss(nn.MSELoss())
+		# content_loss.initialize(nn.MSELoss())
 	elif opt.model == 'pix2pix':
-		content_loss = ContentLoss()
-		content_loss.initialize(nn.L1Loss())
+		content_loss = ContentLoss(nn.L1Loss())
+		# content_loss.initialize(nn.L1Loss())
 	else:
 		raise ValueError("Model [%s] not recognized." % opt.model)
 	
 	if opt.gan_type == 'wgan-gp':
-		disc_loss = DiscLossWGANGP() 
+		disc_loss = DiscLossWGANGP(opt, tensor)
 	elif opt.gan_type == 'lsgan':
-		disc_loss = DiscLossLS()
+		disc_loss = DiscLossLS(opt, tensor)
 	elif opt.gan_type == 'gan':
-		disc_loss = DiscLoss()
+		disc_loss = DiscLoss(opt, tensor)
 	else:
 		raise ValueError("GAN [%s] not recognized." % opt.gan_type)
-	disc_loss.initialize(opt, tensor)
+	# disc_loss.initialize(opt, tensor)
 	return disc_loss, content_loss
