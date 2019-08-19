@@ -23,7 +23,7 @@ Put the weights into
 ```
 To test a model put your blurry images into a folder and run:
 ```bash
-python test.py --dataroot /.path_to_your_data --model test --dataset_mode single --learn_residual
+python test.py --dataroot ./path_to_your_data --model test --dataset_mode single --learn_residual
 ```
 ## Data
 Download dataset for Object Detection benchmark from [Google Drive](https://drive.google.com/file/d/1CPMBmRj-jBDO2ax4CxkBs9iczIFrs8VA/view?usp=sharing)
@@ -37,7 +37,7 @@ python datasets/combine_A_and_B.py --fold_A /path/to/data/A --fold_B /path/to/da
 And then the following command to train the model
 
 ```bash
-python train.py --dataroot /.path_to_your_data --learn_residual --resize_or_crop crop --fineSize CROP_SIZE (we used 256)
+python train.py --dataroot ./path_to_your_data --learn_residual --resize_or_crop crop --fineSize CROP_SIZE (we used 256)
 ```
 
 ## Other Implementations
